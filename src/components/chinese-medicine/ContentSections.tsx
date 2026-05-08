@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Icon from "@/components/ui/icon";
 import {
   PROCEDURES,
@@ -5,6 +6,7 @@ import {
   REVIEWS,
   GALLERY_ITEMS,
 } from "./constants";
+import BlogModal from "./BlogModal";
 
 interface ContentSectionsProps {
   isVisible: (id: string) => boolean;
@@ -42,11 +44,15 @@ function SectionHeader({ tag, title }: { tag: string; title: string }) {
   );
 }
 
+type BlogPost = (typeof BLOG_POSTS)[number];
+
 export default function ContentSections({
   isVisible,
   scrollTo,
   sectionRefs,
 }: ContentSectionsProps) {
+  const [activeBlog, setActiveBlog] = useState<BlogPost | null>(null);
+
   return (
     <>
       {/* ABOUT */}
@@ -402,6 +408,7 @@ export default function ContentSections({
               <article
                 key={i}
                 className={`card-3d section-reveal ${isVisible("blog") ? "visible" : ""}`}
+                onClick={() => setActiveBlog(post)}
                 style={{
                   background: "rgba(255,255,255,0.03)",
                   border: "1px solid rgba(212,175,55,0.12)",
@@ -409,6 +416,14 @@ export default function ContentSections({
                   overflow: "hidden",
                   cursor: "pointer",
                   transitionDelay: `${i * 0.1}s`,
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(212,175,55,0.35)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 0 40px rgba(212,175,55,0.08)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(212,175,55,0.12)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "none";
                 }}
               >
                 <div style={{ height: 200, overflow: "hidden", position: "relative" }}>
@@ -441,6 +456,23 @@ export default function ContentSections({
                       {post.tag}
                     </span>
                   </div>
+                  {"readTime" in post && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 16,
+                        right: 16,
+                        background: "rgba(10,7,4,0.7)",
+                        padding: "4px 10px",
+                        backdropFilter: "blur(10px)",
+                        border: "1px solid rgba(212,175,55,0.15)",
+                      }}
+                    >
+                      <span className="font-golos" style={{ color: "var(--gold-dim)", fontSize: "0.65rem" }}>
+                        {(post as typeof post & { readTime: string }).readTime}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div style={{ padding: "28px 28px 32px" }}>
                   <div
@@ -480,6 +512,9 @@ export default function ContentSections({
                   <span
                     className="font-golos"
                     style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
                       color: "var(--gold)",
                       fontSize: "0.75rem",
                       letterSpacing: "0.15em",
@@ -487,10 +522,19 @@ export default function ContentSections({
                       cursor: "pointer",
                       borderBottom: "1px solid rgba(212,175,55,0.3)",
                       paddingBottom: 2,
-                      transition: "border-color 0.3s",
+                      transition: "all 0.3s",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.letterSpacing = "0.2em";
+                      (e.currentTarget as HTMLElement).style.borderColor = "var(--gold)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.letterSpacing = "0.15em";
+                      (e.currentTarget as HTMLElement).style.borderColor = "rgba(212,175,55,0.3)";
                     }}
                   >
-                    Читать далее →
+                    Читать далее
+                    <Icon name="ArrowRight" size={13} color="var(--gold)" />
                   </span>
                 </div>
               </article>
@@ -710,6 +754,8 @@ export default function ContentSections({
           </div>
         </div>
       </section>
+
+      <BlogModal post={activeBlog} onClose={() => setActiveBlog(null)} />
 
       <footer
         style={{

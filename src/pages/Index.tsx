@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Navbar from "@/components/chinese-medicine/Navbar";
 import HeroSection from "@/components/chinese-medicine/HeroSection";
 import ContentSections from "@/components/chinese-medicine/ContentSections";
+import CinematicBackground from "@/components/chinese-medicine/CinematicBackground";
 
 const GLOBAL_STYLES = `
   :root {
@@ -323,10 +324,13 @@ export default function Index() {
   const isVisible = (id: string) => visibleSections.has(id);
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--bg-deep)" }}>
+    <div className="min-h-screen" style={{ background: "var(--bg-deep)", cursor: "none" }}>
       <style>{GLOBAL_STYLES}</style>
 
-      <Navbar
+      <CinematicBackground />
+
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <Navbar
         scrollY={scrollY}
         activeSection={activeSection}
         menuOpen={menuOpen}
@@ -344,6 +348,7 @@ export default function Index() {
         scrollTo={scrollTo}
         sectionRefs={sectionRefs}
       />
+      </div>
     </div>
   );
 }
